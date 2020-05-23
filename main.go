@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"go-websocket/configs"
 	"go-websocket/define"
 	"go-websocket/pkg/redis"
 	"go-websocket/routers"
@@ -17,7 +16,7 @@ func main() {
 	port := getPort()
 
 	//初始化RPC服务
-	initRPCServer(port)
+	initRPCServer()
 
 	//记录本机内网IP地址
 	define.LocalHost = util.GetIntranetIp()
@@ -38,11 +37,11 @@ func main() {
 	}
 }
 
-func initRPCServer(port string) {
+func initRPCServer() {
 	//如果是集群，则启用RPC进行通讯
 	if util.IsCluster() {
 		//初始化RPC服务
-		rpcPort := configs.RPCPort
+		rpcPort := define.RPCPort
 		servers.InitRpcServer(rpcPort)
 		fmt.Printf("启动RPC，端口号：%s\n", rpcPort)
 	}
@@ -51,7 +50,7 @@ func initRPCServer(port string) {
 //将服务器地址、端口注册到redis中
 func registerServer() {
 	if util.IsCluster() {
-		_, err := redis.SetAdd(define.REDIS_KEY_SERVER_LIST, define.LocalHost+":"+configs.RPCPort)
+		_, err := redis.SetAdd(define.REDIS_KEY_SERVER_LIST, define.LocalHost+":"+define.RPCPort)
 		if err != nil {
 			panic(err)
 		}
@@ -67,5 +66,6 @@ func getPort() string {
 	}
 
 	define.Port = port
+	define.RPCPort = "9000"
 	return port
 }

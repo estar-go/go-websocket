@@ -22,7 +22,7 @@ func GenUUID() string {
 
 //对称加密IP和端口，当做clientId
 func GenClientId() string {
-	raw := []byte(define.LocalHost + ":" + configs.RPCPort)
+	raw := []byte(define.LocalHost + ":" + define.RPCPort)
 	key := configs.EncryptKey
 	str, err := crypto.Encrypt(raw, []byte(key))
 	if err != nil {
@@ -50,16 +50,12 @@ func ParseRedisAddrValue(redisValue string) (host string, port string, err error
 
 //判断地址是否为本机
 func IsAddrLocal(host string, port string) bool {
-	return host == define.LocalHost && port == configs.RPCPort
+	return host == define.LocalHost && port == define.RPCPort
 }
 
 //是否集群
 func IsCluster() bool {
-	if configs.RunModel == "cluster" {
-		return true
-	} else {
-		return false
-	}
+	return true
 }
 
 //生成RPC通信端口号，目前是ws端口号+1000
@@ -71,7 +67,7 @@ func GenRpcPort(port string) string {
 //获取group分组key
 func GetGroupKey(groupName string) string {
 	//在redis每个服务都有一个单独的key，用服务器地址(ip:port)区分
-	return define.REDIS_KEY_GROUP + define.LocalHost + ":" + configs.RPCPort + ":" + groupName
+	return define.REDIS_KEY_GROUP + define.LocalHost + ":" + define.RPCPort + ":" + groupName
 }
 
 //获取client key地址信息

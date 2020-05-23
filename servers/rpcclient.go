@@ -6,7 +6,6 @@ import (
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/protocol"
 	"github.com/smallnest/rpcx/share"
-	"go-websocket/configs"
 	"go-websocket/define"
 	"go-websocket/pkg/redis"
 	"sync"
@@ -19,7 +18,7 @@ func getServerList() []*client.KVPair {
 	if err != nil {
 		log.Errorf("failed to get server list: %v", err)
 		return []*client.KVPair{
-			{Key: define.LocalHost + ":" + configs.RPCPort},
+			{Key: define.LocalHost + ":" + define.RPCPort},
 		}
 	}
 
