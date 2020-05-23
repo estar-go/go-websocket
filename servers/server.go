@@ -1,10 +1,12 @@
 package servers
 
 import (
+	"bytes"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"go-websocket/define"
 	"go-websocket/tools/util"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -250,4 +252,21 @@ func PingTimer() {
 		}
 
 	}()
+}
+
+func SendReceiveMessage(message []byte) ([]byte, string) {
+	reader := bytes.NewReader(message)
+	url := "http://127.0.0.1:8080/v1/receive-ws-message"
+	response, err := http.Post(url, "application/json", reader)
+	if err != nil {
+		log.Println(err)
+		content, _ := ioutil.ReadAll(response.Body)
+		return content, err.Error()
+	}
+	if response.StatusCode != 200 {
+		content, _ := ioutil.ReadAll(response.Body)
+		return content, response.Status
+	}
+	var content []byte
+	return content, ""
 }

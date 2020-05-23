@@ -3,9 +3,9 @@ package util
 import (
 	"errors"
 	uuid "github.com/satori/go.uuid"
+	"go-websocket/configs"
 	"go-websocket/define"
 	"go-websocket/tools/crypto"
-	"go-websocket/tools/readconfig"
 	"net"
 	"strconv"
 	"strings"
@@ -22,8 +22,8 @@ func GenUUID() string {
 
 //对称加密IP和端口，当做clientId
 func GenClientId() string {
-	raw := []byte(define.LocalHost + ":" + define.RPCPort)
-	key := readconfig.ConfigData.String("common::crypto_key")
+	raw := []byte(define.LocalHost + ":" + configs.RPCPort)
+	key := configs.EncryptKey
 	str, err := crypto.Encrypt(raw, []byte(key))
 	if err != nil {
 		panic(err)
@@ -50,13 +50,16 @@ func ParseRedisAddrValue(redisValue string) (host string, port string, err error
 
 //判断地址是否为本机
 func IsAddrLocal(host string, port string) bool {
-	return host == define.LocalHost && port == define.RPCPort
+	return host == define.LocalHost && port == configs.RPCPort
 }
 
 //是否集群
 func IsCluster() bool {
-	cluster, _ := readconfig.ConfigData.Bool("common::cluster")
-	return cluster
+	if configs.RunModel == "cluster" {
+		return true
+	} else {
+		return false
+	}
 }
 
 //生成RPC通信端口号，目前是ws端口号+1000
@@ -68,13 +71,13 @@ func GenRpcPort(port string) string {
 //获取group分组key
 func GetGroupKey(groupName string) string {
 	//在redis每个服务都有一个单独的key，用服务器地址(ip:port)区分
-	return define.REDIS_KEY_GROUP + define.LocalHost + ":" + define.RPCPort + ":" + groupName
+	return define.REDIS_KEY_GROUP + define.LocalHost + ":" + configs.RPCPort + ":" + groupName
 }
 
 //获取client key地址信息
 func GetAddrInfoAndIsLocal(clientId string) (addr string, host string, port string, isLocal bool, err error) {
 	//解密ClientId
-	key := readconfig.ConfigData.String("common::crypto_key")
+	key := configs.EncryptKey
 
 	addr, err = crypto.Decrypt(clientId, []byte(key))
 	if err != nil {

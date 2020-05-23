@@ -2,6 +2,7 @@ package servers
 
 import (
 	"github.com/gorilla/websocket"
+	"log"
 	"time"
 )
 
@@ -35,13 +36,20 @@ func NewClient(clientId string, systemId string, socket *websocket.Conn) *Client
 func (c *Client) Read() {
 	go func() {
 		for {
-			messageType, _, err := c.Socket.ReadMessage()
+			messageType, message, err := c.Socket.ReadMessage()
 			if err != nil {
 				if messageType == -1 && websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure, websocket.CloseNoStatusReceived) {
 					Manager.DisConnect <- c
 					return
 				} else if messageType != websocket.PingMessage {
 					return
+				}
+			} else {
+				if response, err := SendReceiveMessage(message); err != "" {
+					if e := c.Socket.WriteMessage(messageType, response); e != nil {
+						log.Println(e)
+						return
+					}
 				}
 			}
 		}

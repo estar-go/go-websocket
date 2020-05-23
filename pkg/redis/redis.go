@@ -3,7 +3,8 @@ package redis
 import (
 	"github.com/gomodule/redigo/redis"
 	log "github.com/sirupsen/logrus"
-	"go-websocket/tools/readconfig"
+	"go-websocket/configs"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -22,17 +23,11 @@ func GetInstance() *redis.Pool {
 }
 
 func newPool() *redis.Pool {
-	host := readconfig.ConfigData.String("redis::host")
-	port := readconfig.ConfigData.String("redis::port")
-	password := readconfig.ConfigData.String("redis::password")
+	host := configs.RedisHost
+	port := configs.RedisPort
+	db, _ := strconv.Atoi(configs.RedisChannel)
 
-	var Conn redis.Conn
-	var err error
-	if len(password) > 0 {
-		Conn, err = redis.Dial("tcp", host+":"+port, redis.DialPassword(password))
-	} else {
-		Conn, err = redis.Dial("tcp", host+":"+port)
-	}
+	Conn, err := redis.Dial("tcp", host+":"+port, redis.DialDatabase(db))
 
 	pool := &redis.Pool{
 		Dial: func() (conn redis.Conn, err error) {
@@ -138,5 +133,8 @@ func SISMEMBER(key string, value string) (bool, error) {
 	rs := GetInstance().Get()
 	defer rs.Close()
 	numInt, err := rs.Do("SISMEMBER", key, value)
+	if err != nil {
+		return false, err
+	}
 	return numInt.(int64) > 0, err
 }

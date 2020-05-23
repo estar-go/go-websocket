@@ -85,22 +85,17 @@ CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build
 
 
 
-**配置文件：**
+**配置：**
 
-配置文件位于项目根目录的`configs/config.ini`，`cluster`为true表示分布式部署。
+redis 地址 REDIS_HOST 默认 127.0.0.1
+redis 端口 REDIS_PORT 默认 6379
+redis 库 REDIS_CHANNEL   默认 0
 
-```ini
-[common]
-# 是否分布式部署
-cluster = true
-# 对称加密key 16位
-crypto_key = xxxxxxxxxxxxxxxx
+集群模式 RunModel   默认 cluster
+集群加密key EncryptKey  默认 xxxxxxxxxxxxxxxx
 
-[redis]
-host = 127.0.0.1
-port = 6379
-password =
-```
+ws http端口 80
+rpc端口 9000
 
 **运行项目：**
 

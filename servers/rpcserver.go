@@ -68,7 +68,7 @@ type GroupListResponse struct {
 func (s *RPCServer) Push2Client(ctx context.Context, args *Push2ClientArgs, response *Response) error {
 	log.WithFields(log.Fields{
 		"host":     define.LocalHost,
-		"port":     define.Port,
+		"port":     80,
 		"clientId": args.ClientId,
 	}).Info("接收到RPC指定客户端消息")
 	SendMessage2LocalClient(args.MessageId, args.ClientId, args.SendUserId, args.Code, args.Message, &args.Data)
@@ -121,7 +121,6 @@ func (s *RPCServer) GetOnlineList(ctx context.Context, args *GetGroupListArgs, r
 }
 
 func InitRpcServer(port string) {
-	define.RPCPort = port
 	go createServer("tcp", ":"+port)
 }
 

@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"go-websocket/configs"
 	"go-websocket/define"
 	"go-websocket/pkg/redis"
 	"go-websocket/routers"
 	"go-websocket/servers"
 	_ "go-websocket/tools/log"
-	"go-websocket/tools/readconfig"
 	"go-websocket/tools/util"
 	"net/http"
 	"os"
@@ -15,11 +15,6 @@ import (
 
 func main() {
 	port := getPort()
-
-	//初始化配置文件
-	if err := readconfig.InitConfig(); err != nil {
-		panic(err)
-	}
 
 	//初始化RPC服务
 	initRPCServer(port)
@@ -47,7 +42,7 @@ func initRPCServer(port string) {
 	//如果是集群，则启用RPC进行通讯
 	if util.IsCluster() {
 		//初始化RPC服务
-		rpcPort := util.GenRpcPort(port)
+		rpcPort := configs.RPCPort
 		servers.InitRpcServer(rpcPort)
 		fmt.Printf("启动RPC，端口号：%s\n", rpcPort)
 	}
@@ -56,7 +51,7 @@ func initRPCServer(port string) {
 //将服务器地址、端口注册到redis中
 func registerServer() {
 	if util.IsCluster() {
-		_, err := redis.SetAdd(define.REDIS_KEY_SERVER_LIST, define.LocalHost+":"+define.RPCPort)
+		_, err := redis.SetAdd(define.REDIS_KEY_SERVER_LIST, define.LocalHost+":"+configs.RPCPort)
 		if err != nil {
 			panic(err)
 		}
@@ -64,7 +59,7 @@ func registerServer() {
 }
 
 func getPort() string {
-	port := "666"
+	port := "80"
 
 	args := os.Args //获取用户输入的所有参数
 	if len(args) >= 2 && len(args[1]) != 0 {
