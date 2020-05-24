@@ -1,0 +1,20 @@
+name: 构建
+on:
+  push:
+    tags:
+      - 'go-websocket-v*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build, Tag, Publish Docker
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: registry.cn-shanghai.aliyuncs.com/estartgo-dev/higo-backend-go
+        username: 弈星科技
+        password: eStarGo2019
+        registry: registry.cn-shanghai.aliyuncs.com
+        dockerfile: Dockerfile
+        tag_names: true
+        cache: true
