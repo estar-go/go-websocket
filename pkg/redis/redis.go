@@ -1,12 +1,12 @@
 package redis
 
 import (
-	"github.com/gomodule/redigo/redis"
-	log "github.com/sirupsen/logrus"
 	"go-websocket/configs"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/gomodule/redigo/redis"
 )
 
 var redisPool *redis.Pool
@@ -26,24 +26,28 @@ func newPool() *redis.Pool {
 	host := configs.RedisHost
 	port := configs.RedisPort
 	db, _ := strconv.Atoi(configs.RedisChannel)
-
-	Conn, err := redis.Dial("tcp", host+":"+port, redis.DialDatabase(db))
-
 	pool := &redis.Pool{
-		Dial: func() (conn redis.Conn, err error) {
-			return Conn, err
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", host+":"+port, redis.DialDatabase(db))
+			if nil != err {
+				return nil, err
+			}
+			return c, nil
 		},
-		TestOnBorrow:    nil,
-		MaxIdle:         10,               //最大空闲连接数
-		MaxActive:       0,                //最大连接数
-		IdleTimeout:     60 * time.Second, //空闲连接超时时间
-		Wait:            false,            //过最大连接，是报错，还是等待
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			if time.Since(t) < time.Minute {
+				return nil
+			}
+			_, err := c.Do("PING")
+			return err
+		},
+		MaxIdle:         100,                //最大空闲连接数
+		MaxActive:       4000,              //最大连接数
+		IdleTimeout:     180 * time.Second, //空闲连接超时时间
+		Wait:            true,              //过最大连接，是报错，还是等待
 		MaxConnLifetime: 0,
 	}
 
-	if err != nil {
-		log.Errorf("redis connect error: %v", err)
-	}
 	return pool
 }
 
