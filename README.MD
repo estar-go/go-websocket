@@ -88,11 +88,15 @@ CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build
 **配置：**
 
 redis 地址 REDIS_HOST 默认 127.0.0.1
+
 redis 端口 REDIS_PORT 默认 6379
+
 redis 库 REDIS_CHANNEL   默认 0
+
 集群加密key EncryptKey  默认 xxxxxxxxxxxxxxxx
 
 ws http端口 80
+
 rpc端口 9000
 
 **运行项目：**
