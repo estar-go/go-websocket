@@ -1,9 +1,10 @@
 package servers
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 type Client struct {
@@ -45,10 +46,12 @@ func (c *Client) Read() {
 					return
 				}
 			} else {
-				if response, err := SendReceiveMessage(message); err != "" {
-					if e := c.Socket.WriteMessage(messageType, response); e != nil {
-						log.Println(e)
-						return
+				if string(message) != "ping" {
+					if response, err := SendReceiveMessage(message); err != "" {
+						if e := c.Socket.WriteMessage(messageType, response); e != nil {
+							log.Println(e)
+							return
+						}
 					}
 				}
 			}
