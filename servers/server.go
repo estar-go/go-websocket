@@ -2,13 +2,15 @@ package servers
 
 import (
 	"bytes"
-	"github.com/gorilla/websocket"
-	log "github.com/sirupsen/logrus"
+	"go-websocket/configs"
 	"go-websocket/define"
 	"go-websocket/tools/util"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 //channel通道
@@ -256,7 +258,7 @@ func PingTimer() {
 
 func SendReceiveMessage(message []byte) ([]byte, string) {
 	reader := bytes.NewReader(message)
-	url := "http://127.0.0.1:8080/v1/receive-ws-message"
+	url := "http://" + configs.BackendGoHost + ":" + configs.BackendGoPort + "/v1/receive-ws-message"
 	response, err := http.Post(url, "application/json", reader)
 	if err != nil {
 		log.Println(err)

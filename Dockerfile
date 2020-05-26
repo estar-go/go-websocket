@@ -22,10 +22,12 @@ RUN apk add --no-cache -U  tzdata && \
     echo "Asia/Shanghai" > /etc/timezone && \
     chmod +x /bin/app
 
-ENV REDIS_HOST='redis'
+ENV REDIS_HOST=redis
 ENV REDIS_PORT=6379
 ENV REDIS_CHANNEL=0
-ENV ENCRYPT_KEY="xxxxxxxxxxxxxxxx"
+ENV ENCRYPT_KEY=xxxxxxxxxxxxxxxx
+ENV BACKENND_GO_HOST=127.0.0.1
+ENV BACKENND_GO_PORT=8080
 
 CMD ["/bin/app"]
 EXPOSE 80
