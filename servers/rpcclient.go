@@ -62,13 +62,13 @@ func SendRpc2Client(addr string, messageId, sendUserId, clientId string, code in
 	XClient := getXClient(addr)
 	defer XClient.Close()
 
-	log.WithFields(log.Fields{
-		"host":     define.LocalHost,
-		"port":     define.Port,
-		"add":      addr,
-		"clientId": clientId,
-		"msg":      (*data).(string),
-	}).Info("发送到服务器")
+	//log.WithFields(log.Fields{
+	//	"host":     define.LocalHost,
+	//	"port":     define.Port,
+	//	"add":      addr,
+	//	"clientId": clientId,
+	//	"msg":      (*data).(string),
+	//}).Info("发送到服务器")
 	err := XClient.Call(context.Background(), "Push2Client", &Push2ClientArgs{MessageId: messageId, SendUserId: sendUserId, ClientId: clientId, Code: code, Message: message, Data: data}, &Response{})
 
 	if err != nil {
@@ -80,12 +80,12 @@ func CloseRpcClient(addr string, clientId, systemId string) {
 	XClient := getXClient(addr)
 	defer XClient.Close()
 
-	log.WithFields(log.Fields{
-		"host":     define.LocalHost,
-		"port":     define.Port,
-		"add":      addr,
-		"clientId": clientId,
-	}).Info("发送关闭连接到服务器")
+	//log.WithFields(log.Fields{
+	//	"host":     define.LocalHost,
+	//	"port":     define.Port,
+	//	"add":      addr,
+	//	"clientId": clientId,
+	//}).Info("发送关闭连接到服务器")
 	err := XClient.Call(context.Background(), "CloseClient", &CloseClientArgs{SystemId: systemId, ClientId: clientId}, &Response{})
 	if err != nil {
 		log.Errorf("failed to call: %v", err)
